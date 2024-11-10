@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity,
+	 Platform, KeyboardAvoidingView } from 'react-native';
 import Svg from 'react-native-svg';
 import SvgIcon from './SvgIcon';
 
@@ -68,6 +69,16 @@ const Start = ({ navigation }) => {
 	          </TouchableOpacity>
 	        </View>
 	      </View>
+
+	      { Platform.OS === "android"
+	        ? <KeyboardAvoidingView behavior="height" />
+	        : null
+	      }
+	      { Platform.OS === "ios"
+	        ? <KeyboardAvoidingView behavior="padding" />
+	        : null
+	      }
+
 	    </ImageBackground>
     );
 }
@@ -85,6 +96,7 @@ const styles = StyleSheet.create({
         fontSize: 45,
         fontWeight: '600',
         color: '#FFFFFF',
+	marginBottom: 300,
     },
     secondaryContainer: {
 	width: '88%',
