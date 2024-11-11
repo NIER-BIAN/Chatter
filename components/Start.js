@@ -1,13 +1,56 @@
+//============================================================================================
+// IMPORT
+
 import { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity,
+import { Alert, StyleSheet, View, Text, TextInput, ImageBackground, TouchableOpacity,
 	 Platform, KeyboardAvoidingView } from 'react-native';
+import { getAuth, signInAnonymously } from "firebase/auth";
 import Svg from 'react-native-svg';
 import SvgIcon from './SvgIcon';
 
 const Start = ({ navigation }) => {
+
+    //========================================================================================
+    // ANON AUTHENTICATION
     
+    const auth = getAuth(); // returns the authentication handle of Firebase.
+
+    const signInUser = () => {
+
+	
+	              // Chat screen will access the user’s name via route.params.name
+	  	      // 'route', like 'navigation', is a prop passed to all screens
+		      // listed under Stack.Navigator
+	
+	signInAnonymously(auth) // remember: auth is the auth handler
+	    .then(result => {
+		/*
+		  navigates to the Chat screen while passing user info
+		  assigned to their respective route parameters
+		  e.g. Chat screen will access the user’s username via route.params.username
+	  	  'route', like 'navigation', is a prop passed to all screens listed
+		  in Stack.Navigator
+		*/
+		navigation.navigate("Chat",
+				    { userID: result.user.uid,
+				      username: username,
+				      bgColor: bgColor
+				    });
+		Alert.alert("Signed in Successfully!");
+	    })
+	    .catch((error) => {
+		Alert.alert("Unable to sign in, try again later.");
+	    })
+    }
+    
+    //========================================================================================
+    // STATE MANAGEMENT
+
     const [username, setUsername] = useState('');
     const [bgColor, setBgColor] = useState('#FFFFFF');
+
+    //========================================================================================
+    // UI RENDERING
     
     const bgColorOptions = ['#090C08', '#474056', '#8A95A5', '#B9C6AE', '#FFFFFF'];
     
@@ -55,15 +98,7 @@ const Start = ({ navigation }) => {
 	    
                   <TouchableOpacity
 		    style={styles.startChattingButton}
-	            onPress={
-	              // Chat screen will access the user’s name via route.params.name
-	  	      // 'route', like 'navigation', is a prop passed to all screens
-		      // listed under Stack.Navigator
-	              () => navigation.navigate(
-			  'Chat',
-			  { username: username, bgColor: bgColor }
-		      )
-	            }
+	            onPress={signInUser}
 	          >
 	            <Text style={styles.startChattingButtonText}>Start chatting</Text>
 	          </TouchableOpacity>
@@ -82,6 +117,9 @@ const Start = ({ navigation }) => {
 	    </ImageBackground>
     );
 }
+
+//============================================================================================
+// STYLES
 
 const styles = StyleSheet.create({
     bgImage: {
@@ -155,5 +193,8 @@ const styles = StyleSheet.create({
 	color: '#FFFFFF',
     },
 });
+
+//============================================================================================
+// EXPORT
 
 export default Start;
