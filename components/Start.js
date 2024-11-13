@@ -1,4 +1,4 @@
-//============================================================================================
+//======================================================================================
 // IMPORT
 
 import { useState } from 'react';
@@ -10,7 +10,7 @@ import SvgIcon from './SvgIcon';
 
 const Start = ({ navigation }) => {
 
-    //========================================================================================
+    //==================================================================================
     // ANON AUTHENTICATION
     
     const auth = getAuth(); // returns the authentication handle of Firebase.
@@ -27,7 +27,7 @@ const Start = ({ navigation }) => {
 		/*
 		  navigates to the Chat screen while passing user info
 		  assigned to their respective route parameters
-		  e.g. Chat screen will access the user’s username via route.params.username
+		  e.g. Chat will access the user’s username via route.params.username
 	  	  'route', like 'navigation', is a prop passed to all screens listed
 		  in Stack.Navigator
 		*/
@@ -43,13 +43,13 @@ const Start = ({ navigation }) => {
 	    })
     }
     
-    //========================================================================================
+    //==================================================================================
     // STATE MANAGEMENT
 
     const [username, setUsername] = useState('');
     const [bgColor, setBgColor] = useState('#FFFFFF');
 
-    //========================================================================================
+    //==================================================================================
     // UI RENDERING
     
     const bgColorOptions = ['#090C08', '#474056', '#8A95A5', '#B9C6AE', '#FFFFFF'];
@@ -118,7 +118,7 @@ const Start = ({ navigation }) => {
     );
 }
 
-//============================================================================================
+//======================================================================================
 // STYLES
 
 const styles = StyleSheet.create({
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     },
 });
 
-//============================================================================================
+//======================================================================================
 // EXPORT
 
 export default Start;

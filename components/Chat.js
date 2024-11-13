@@ -4,10 +4,12 @@
 import { useState, useEffect } from "react";
 import { Alert, StyleSheet, View, Text, TextInput,
 	 TouchableOpacity,Platform, KeyboardAvoidingView } from 'react-native';
-import { collection, addDoc, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import { collection, addDoc, onSnapshot, query, where, orderBy } from "firebase/firestore";
+// client-side storage lib
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Chat = ({ route, navigation, db }) => {
+const Chat = ({ route, navigation, db, isConnected }) => {
 
     // note that 'route' and 'navigation' are props passed to all components under Stack.Navigator
     const { userID, username, bgColor } = route.params;
@@ -49,42 +51,74 @@ const Chat = ({ route, navigation, db }) => {
     
     //======================================================================================
     // SIDE EFFECTS
-    
-    // onSnapshot uses a callback that, unlike async/await, can be directly run in useEffect().
-    // It Will fetch an updated documents list when it detects any changes.
+
     useEffect(
 	
 	() => {
-
 	    // place username on top of screen
 	    navigation.setOptions({ title: username });
+	},
+	[]
+    );
+    
+    const loadCachedChats = async () => {
+	const cachedChats = await AsyncStorage.getItem("cached_chats") || [];
+	setLists(JSON.parse(cachedChats));
+    }
+
+    // make unsubMessages visible to return / cleanup block
+    // otherwise its scope is limited to the if block
+    let unsubMessages;
+    
+    useEffect(
+	
+	() => {
 	    
-	    // get all messages and sort by descending createdAt
-	    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-	    const unsubMessages = onSnapshot(q,
+	    // set up onSnapshot listener
+	    // onSnapshot uses a callback that (unlike async/await) can be directly run in useEffect
+	    // it will fetch an updated documents list when it detects any changes
+	    if (isConnected === true) {
+		
+		// unregister any pre-existing onSnapshot() listener to avoid
+		// registering multiples when useEffect code is re-executed.
+		if (unsubMessages) unsubMessages();
+		unsubMessages = null;
+		
+		// onSnapshot arg 1 of 2: q
+		// get all messages and sort by descending createdAt
+		const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
 
-					     // 2 of 2: callback called when change detected
-					     // also be called at the start
-					     // i.e. it also loads intial set of messages
-					     (documentsSnapshot) => {
+		// onSnapshot arg 2 of 2: callback called when change detected
+		unsubMessages = onSnapshot(q, async (documentsSnapshot) => {
+		    
+		    // Note: callback also called at the start
+		    // i.e. it also loads the intial set of msgs
+		    
+		    let curMessages = [];
+		    
+		    documentsSnapshot.forEach(doc => {
+			curMessages.push(
+			    { id: doc.id,
+			      ...doc.data(),
+			      // to faciliate desc. sorting
+			      createdAt: new Date(
+				  doc.data().createdAt.toMillis()
+			      )
+			    }
+			)
+		    });
 
-						 let curMessages = [];
-						 
-						 documentsSnapshot.forEach(doc => {
-						     curMessages.push(
-							 { id: doc.id,
-							   ...doc.data(),
-							   // to faciliate desc. sorting
-							   createdAt: new Date(
-							       doc.data().createdAt.toMillis()
-							   )
-							 }
-						     )
-						 });
+		    // set cache
+		    try {
+			await AsyncStorage.setItem('cached_chats', JSON.stringify(curMessages));
+		    } catch (error) {
+			console.log(error.message);
+		    }
+		    
+		    setMessages(curMessages);
+		});
 
-						 setMessages(curMessages);
-						 
-					     });
+	    } else loadCachedChats();
 	    
 	    // note: onSnapshot() **returns** the listener unsubscribe function
 	    
@@ -95,10 +129,11 @@ const Chat = ({ route, navigation, db }) => {
 	    }
 	},
 	
-	// You only need to establish the listener once when the Chat component is mounted
-	[]
+	// Re-establish  listener once reconnected
+	[isConnected]
     );
 
+    
     //======================================================================================
     // UI RENDERING
     
