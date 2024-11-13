@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { Alert, StyleSheet, View, Text, TextInput,
 	 TouchableOpacity,Platform, KeyboardAvoidingView } from 'react-native';
-import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, onSnapshot, query, where, orderBy } from "firebase/firestore";
 // client-side storage lib
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,10 +17,10 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     //======================================================================================
     // STATE MANAGEMENT
     
-    // GiftedChat comes with its own props 1 of 4: messages
+    // GiftedChat comes with its own props 1 of 5: messages
     const [messages, setMessages] = useState([]);
 
-    // GiftedChat comes with its own props 2 of 4: renderBubble
+    // GiftedChat comes with its own props 2 of 5: renderBubble
     // set colours for speech-bubbles of sender vs receiver
     const renderBubble = (props) => {
 	return (
@@ -38,7 +38,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
  	);
     }
 
-    // GiftedChat comes with its own props 3 of 4: onSend
+    // GiftedChat comes with its own props 3 of 5: onSend
     // write to firestore DB, which triggers the onSnapshot listener which triggers a re-render
     const onSend = (newestMessage) => {
 	// issue a query to add newestMessage obj as a document to the collection.
@@ -46,8 +46,15 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 	// note that addDoc() will also auto-generate an ID for the new document
 	addDoc(collection(db, "messages"), newestMessage[0])
     };
+
+    // GiftedChat comes with its own props 4 of 5: renderInputToolbar
+    // prevent user from sending message when offline
+    const renderInputToolbar = (props) => {
+	if (isConnected) return <InputToolbar {...props} />;
+	else return null;
+    };
     
-    // GiftedChat comes with its own props 4 of 4: user (constructed in render tag)
+    // GiftedChat comes with its own props 5 of 5: user (constructed in render tag)
     
     //======================================================================================
     // SIDE EFFECTS
@@ -136,7 +143,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     
     //======================================================================================
     // UI RENDERING
-    
+
     // NOTE: "item" is a reserved keyword for the renderItem prop in FlatList
     return (
             <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -147,6 +154,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 	        messages={messages}
                 renderBubble={renderBubble}
 	        onSend={newestMessage => onSend(newestMessage)}
+                renderInputToolbar={renderInputToolbar}
 	        user={{
 	          _id: userID,
                   name: username
