@@ -8,6 +8,12 @@ import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, onSnapshot, query, where, orderBy } from "firebase/firestore";
 // client-side storage lib
 import AsyncStorage from "@react-native-async-storage/async-storage";
+// for sending geolocations
+import MapView from 'react-native-maps';
+
+// local
+import CustomActions from './CustomActions';
+
 
 const Chat = ({ route, navigation, db, isConnected }) => {
 
@@ -16,11 +22,23 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     
     //======================================================================================
     // STATE MANAGEMENT
-    
-    // GiftedChat comes with its own props 1 of 5: messages
-    const [messages, setMessages] = useState([]);
 
-    // GiftedChat comes with its own props 2 of 5: renderBubble
+    // GiftedChat comes with its own props. When it iterates through all msg to render each msg,
+    // it provides info about the current msg being processed to the render functions
+	
+    // GiftedChat comes with its own props 1 of 7: messages
+    const [messages, setMessages] = useState([]);
+    
+    // GiftedChat comes with its own props 2 of 7: onSend
+    // write to firestore DB, which triggers the onSnapshot listener which triggers a re-render
+    const onSend = (newestMessage) => {
+	// issue a query to add newestMessage obj as a document to the collection.
+	// addDoc accepts a collection() reference and the object you want to add
+	// note that addDoc() will also auto-generate an ID for the new document
+	addDoc(collection(db, "messages"), newestMessage[0])
+    };
+
+    // GiftedChat comes with its own props 3 of 7: renderBubble
     // set colours for speech-bubbles of sender vs receiver
     const renderBubble = (props) => {
 	return (
@@ -35,26 +53,51 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 	        left: { backgroundColor: "#FFF"}
 	      }}
 	    />
- 	);
+  	);
     }
-
-    // GiftedChat comes with its own props 3 of 5: onSend
-    // write to firestore DB, which triggers the onSnapshot listener which triggers a re-render
-    const onSend = (newestMessage) => {
-	// issue a query to add newestMessage obj as a document to the collection.
-	// addDoc accepts a collection() reference and the object you want to add
-	// note that addDoc() will also auto-generate an ID for the new document
-	addDoc(collection(db, "messages"), newestMessage[0])
-    };
-
-    // GiftedChat comes with its own props 4 of 5: renderInputToolbar
+    // GiftedChat comes with its own props 4 of 7: renderInputToolbar
     // prevent user from sending message when offline
     const renderInputToolbar = (props) => {
 	if (isConnected) return <InputToolbar {...props} />;
 	else return null;
     };
     
-    // GiftedChat comes with its own props 5 of 5: user (constructed in render tag)
+    // GiftedChat comes with its own props 5 of 7: renderCustomActions
+    // i.e. the circle button that leads to options to send media and location
+    const renderCustomActions = (props) => {
+	return <CustomActions {...props} />;
+    };
+
+    // GiftedChat comes with its own props 6 of 7: renderCustomView
+    // it is called internally by GiftedChat for each msg being rendered
+    // to determine whether a custom view needs to be displayed based on the msg's content.
+    const renderCustomView = (props) => {
+
+	// extract the currentMessage object from the props
+	const { currentMessage } = props;
+
+	// if currentMessage contains location data, return a MapView
+	if (currentMessage.location) {
+	    return (
+		    <MapView
+		      style={{width: 150,
+			height: 100,
+			borderRadius: 13,
+			margin: 3}}
+		      // Note that latitudeDelta & longitudeDelta determine size of the map
+		      region={{
+		        latitude: currentMessage.location.latitude,
+		        longitude: currentMessage.location.longitude,
+		        latitudeDelta: 0.0922,
+		        longitudeDelta: 0.0421,
+		      }}
+		    />
+	    );
+	}
+	return null;
+    }
+    
+    // GiftedChat comes with its own props 7 of 7: user (constructed in render tag)
     
     //======================================================================================
     // SIDE EFFECTS
@@ -67,10 +110,11 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 	},
 	[]
     );
-    
+
+    // called by second useEffect hook
     const loadCachedChats = async () => {
 	const cachedChats = await AsyncStorage.getItem("cached_chats") || [];
-	setLists(JSON.parse(cachedChats));
+	setMessages(JSON.parse(cachedChats));
     }
 
     // make unsubMessages visible to return / cleanup block
@@ -149,18 +193,24 @@ const Chat = ({ route, navigation, db, isConnected }) => {
             <View style={[styles.container, { backgroundColor: bgColor }]}>
 	    
 	      {/* GiftedChat comes with its own props */}
-	      {/* pass the messages state, onSend prop, and the current user inf to GiftedChat */}
+	      {/*
+	        Note that GiftedChat passes onSend as a prop to the func assigned
+	        to renderCustomActions prop (where msgs with images and locations
+		are constructed and sent).
+	      */}
 	      <GiftedChat
 	        messages={messages}
-                renderBubble={renderBubble}
 	        onSend={newestMessage => onSend(newestMessage)}
+                renderBubble={renderBubble}
                 renderInputToolbar={renderInputToolbar}
+	        renderCustomActions={renderCustomActions}
+                renderCustomView={renderCustomView}
 	        user={{
 	          _id: userID,
                   name: username
 	        }}
               />
- 	      {/* For older mobiles running android: prevent keyboard from blocking view */}
+  	      {/* For older mobiles running android: prevent keyboard from blocking view */}
 	      { Platform.OS === 'android'
 	        ? <KeyboardAvoidingView behavior="height" />
 	        : null

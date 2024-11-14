@@ -2,6 +2,7 @@
 // IMPORTS
 
 import { useEffect } from 'react';
+import { Alert } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { initializeApp } from "firebase/app";
@@ -94,11 +95,16 @@ const App = () => {
 		<Stack.Screen
 		    name="Chat"
 	        >
-	        {/*
-	          spread syntax passes all props received by chat to chat component
-	          while still passing additional props (e.g. isConnected & db)
-	        */}
-	        { props => <Chat isConnected={connectionStatus.isConnected} db={db} {...props} /> }
+	          {/*
+	            spread syntax passes all props received by chat to chat component
+	            while still passing additional props (e.g. isConnected & db)
+	          */}
+	          {
+	            props => <Chat
+	              isConnected={connectionStatus.isConnected}
+	              db={db}
+	              {...props} />
+	          }
 	        </Stack.Screen>
 	    </Stack.Navigator>
 	</NavigationContainer>
