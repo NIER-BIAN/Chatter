@@ -64,7 +64,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     
     // GiftedChat comes with its own props 5 of 7: renderCustomActions
     // i.e. the circle button that leads to options to send media and location
-    const renderCustomActions = (props) => {
+    const renderActions = (props) => {
 	return <CustomActions {...props} />;
     };
 
@@ -203,7 +203,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 	        onSend={newestMessage => onSend(newestMessage)}
                 renderBubble={renderBubble}
                 renderInputToolbar={renderInputToolbar}
-	        renderCustomActions={renderCustomActions}
+	        renderActions={renderActions}
                 renderCustomView={renderCustomView}
 	        user={{
 	          _id: userID,
