@@ -15,7 +15,7 @@ import MapView from 'react-native-maps';
 import CustomActions from './CustomActions';
 
 
-const Chat = ({ route, navigation, db, isConnected }) => {
+const Chat = ({ route, navigation, db, storage, isConnected }) => {
 
     // note that 'route' and 'navigation' are props passed to all components under Stack.Navigator
     const { userID, username, bgColor } = route.params;
@@ -65,7 +65,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     // GiftedChat comes with its own props 5 of 7: renderCustomActions
     // i.e. the circle button that leads to options to send media and location
     const renderActions = (props) => {
-	return <CustomActions {...props} />;
+	return <CustomActions storage={storage} userID={userID} {...props} />;
     };
 
     // GiftedChat comes with its own props 6 of 7: renderCustomView

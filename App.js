@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 // firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 // for client-side storage
 import { useNetInfo }from '@react-native-community/netinfo';
 
@@ -54,6 +55,9 @@ const App = () => {
     // Initialize Cloud Firestore and get a reference to the service
     // the reference to the db can then be passed to elsewhere within the app (Chat)
     const db = getFirestore(app);
+
+    // Initialise handler to Firebase storage and get a reference to storage location
+    const storage = getStorage(app);
     
     //=======================================================================================
     // STATE MANAGEMENT
@@ -104,7 +108,8 @@ const App = () => {
 	      {
 	        props => <Chat
 	          isConnected={connectionStatus.isConnected}
-	          db={db}
+                  storage={storage}
+		  db={db}
 	          {...props} />
 	      }
 	    </Stack.Screen>
