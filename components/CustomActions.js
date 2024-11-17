@@ -1,5 +1,3 @@
-//using Cloud Storage for Firebase (1GB of storage for free)
-
 //=========================================================================================
 // IMPORTS
 

@@ -17,10 +17,9 @@ const Start = ({ navigation }) => {
 
     const signInUser = () => {
 
-	
-	              // Chat screen will access the user’s name via route.params.name
-	  	      // 'route', like 'navigation', is a prop passed to all screens
-		      // listed under Stack.Navigator
+	// Chat screen will access the user’s name via route.params.name
+	// 'route', like 'navigation', is a prop passed to all screens
+	// listed under Stack.Navigator
 	
 	signInAnonymously(auth) // remember: auth is the auth handler
 	    .then(result => {
@@ -38,9 +37,9 @@ const Start = ({ navigation }) => {
 				    });
 		Alert.alert("Signed in Successfully!");
 	    })
-	    .catch((error) => {
-		Alert.alert("Unable to sign in, try again later.");
-	    })
+	    //.catch((error) => {
+		//Alert.alert("Unable to sign in, try again later.");
+	    //})
     }
     
     //==================================================================================
