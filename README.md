@@ -1,6 +1,8 @@
 # Chatter
 
-Chatter is a real-time, cross-platform mobile chat app. It is built to run on both iOS and Android devices.
+Chatter is a real-time mobile chat app built to run on both iOS and Android devices.
+
+![Screenshot of live app](ReadMeImg.png)
 
 ## Features:
 
@@ -45,7 +47,7 @@ You can follow these steps to set up the project locally:
 
 3. **Configure Firebase:**
 
-   Create a new project with Firebase Console. Via the "Rules" tab on the Firestore dashboard, change its default configuration so the database allows read-and-write queries from a mobile or web app i.e. change `false` to `true` in line 5 on the document displayed. Register your web app to generate configurations, then put your credentials in  a local config.json file with the following content:
+   Create a new project with Firebase Console. Via the "Rules" tab on the Firestore dashboard, change its default configuration so the database allows read-and-write queries from a mobile or web app i.e. change `false` to `true` in line 5 on the document displayed. Under Build → Authentication on the left-hand menu, ensure that anonymous authentication is enabled. Register your web app to generate configurations, then place your credentials in a local config.json file with the following content:
    
    ```
    {
@@ -57,14 +59,14 @@ You can follow these steps to set up the project locally:
      "appId": "YOUR_APP_ID"
    }
    ```
-  Last but not least, under Build → Authentication on the left-hand menu, enable anonymous authentication.
   
 4. **Run the app locally:**
+
    ```bash
    npm run start
    ```
 
-Note this project made use of virtual devices via Android Studio as emulators for testing.
+5. Set up  Expo-Go on your own mobile device or a virtual device via Android Studio.
 
 ---
 
