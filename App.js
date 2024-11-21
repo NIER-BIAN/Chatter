@@ -10,7 +10,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 // for client-side storage
-import { useNetInfo }from '@react-native-community/netinfo';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import Start from './components/Start';
 import Chat from './components/Chat';

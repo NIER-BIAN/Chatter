@@ -14,7 +14,6 @@ import MapView from 'react-native-maps';
 // local
 import CustomActions from './CustomActions';
 
-
 const Chat = ({ route, navigation, db, storage, isConnected }) => {
 
     // note that 'route' and 'navigation' are props passed to all components under Stack.Navigator
