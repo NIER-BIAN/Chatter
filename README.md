@@ -1,12 +1,22 @@
 # Chatter
 
-Chatter is a mobile chat app built with React Native. It is built to run on both iOS and Android devices.
+Chatter is a real-time, cross-platform mobile chat app. It is built to run on both iOS and Android devices.
 
 ## Features:
-- Messaging
+
+- Real-time messaging
 - Image Sharing (Uploaded from the user's gallery or taken with the device's camera)
 - Location Sharing
 - Offline access to (cached) messages
+
+## Technologies Used
+
+- React Native
+- GiftedChat
+- Firebase for backend storage
+- Expo as development platform
+- Android Studio Emulator for testing
+- AsyncStorage for caching
 
 ## Setup Instructions
 
@@ -53,3 +63,9 @@ You can follow these steps to set up the project locally:
    ```bash
    npm run start
    ```
+
+Note this project made use of virtual devices via Android Studio as emulators for testing.
+
+---
+
+中甴曱甲串申由田㗊𣊫㽬
